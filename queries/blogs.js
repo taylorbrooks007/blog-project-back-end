@@ -3,7 +3,7 @@ const db = require("../db/dbConfig.js");
 const getAllBlogs = async () => {
   try {
     const allBlogs = await db.any("SELECT * FROM blogs");
-    return allBlogs;
+    return {allBlogs};
   } catch (error) {
     return { error: error };
   }
@@ -12,23 +12,23 @@ const getAllBlogs = async () => {
 const singleBlog = async (id) => {
   try {
     const blog = await db.one(`SELECT * FROM blogs WHERE id=${id}`);
-    return blog;
+    return {blog};
   } catch (error) {
     return { error: error };
   }
 };
 
-const newBlog = async (blog) => {
+const createBlog = async (blog) => {
   try {
     const newBlog = await db.one(
       `INSERT INTO
-        blogs(title, img_url, body, author, date_created)
+        blogs(title, img_url, body, author, date_created, is_fav)
        VALUES
-        ($1, $2, $3, $4)
+        ($1, $2, $3, $4, $5)
        RETURNING *;`,
-      [blog.title, blog.img_url, blog.body, blog.author, blog.date_created]
+      [blog.title, blog.img_url, blog.body, blog.author, blog.date_created, blog.is_fav]
     );
-    return newBlog;
+    return {newBlog};
   } catch (error) {
     return { error: error };
   }
@@ -51,8 +51,8 @@ const updateBlog = async (id, blog) => {
   // blogs/id
   try {
     const updatedBlog = await db.one(
-      `UPDATE blogs SET title=$1, img_url=$2, body=$3, author=$4 date_created=$5 RETURNING *`,
-      [blog.title, blog.img_url, blog.body, blog.author, blog.date_created, id]
+      `UPDATE blogs SET title=$1, img_url=$2, body=$3, author=$4 date_updated=$5, is_fav=$6 WHERE id=$7 RETURNING *`,
+      [blog.title, blog.img_url, blog.body, blog.author, blog.date_updated, blog.is_fav, id]
     );
     return updatedBlog;
   } catch (e) {
@@ -63,7 +63,7 @@ const updateBlog = async (id, blog) => {
 module.exports = {
   getAllBlogs,
   singleBlog,
-  newBlog,
+  createBlog,
   deleteBlog,
   updateBlog,
 };

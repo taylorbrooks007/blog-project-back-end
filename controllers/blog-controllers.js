@@ -3,7 +3,7 @@ const blogs = express.Router();
 const {
   getAllBlogs,
   singleBlog,
-  newBlog,
+  createBlog,
   deleteBlog,
   updateBlog,
 } = require("../queries/blogs.js");
@@ -11,39 +11,45 @@ const {
 // index
 blogs.get("/", async (req, res) => {
   //http://localhost:5001/blogs
-  const allBlogs = await getAllBlogs();
-  if (!allBlogs.error) {
-    res.status(200).json(allBlogs);
+  const {error, allBlogs} = await getAllBlogs();
+  console.log(allBlogs)
+  if (error) {
+   return  res.status(500).json({ error : error });
   } else {
-    res.status(500).json({ error: "server error" });
+   return  res.status(200).json(allBlogs);
   }
 });
 
 // show
 blogs.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const oneBlog = await singleBlog(id);
-  res.json(oneBlog);
+  const {error, blog} = await singleBlog(id);
+  if (error) {
+    return res.status(500).json({ error: "server error" });
+  } else {
+   return res.status(200).json(blog);
+  
+  }
 });
 
 // create
 blogs.post(
   "/",
-  (req, res, next) => {
-    // validate req.body
-    const { title, img_url, body, author, date_created } = req.body;
-    if (!title || !img_url || !body || !author || !date_created) {
-      return res.status(404).json({
-        error: "body requires title, img_url, body, author, and date created",
-      });
-    }
-
-    next();
+  async (req, res) => {
+    const blog = req.body 
+    const {error, newBlog} = await createBlog(blog);
+      if (error) {
+        return res.status(500).json({ error : "server error"});
+      } else {
+        return res.status(200).json(blog);
+      }
   },
+
+
   async (req, res) => {
     const { title, img_url, body, author, date_created } = req.body;
 
-    const newBookmark = await createBookmark({
+    const newBookmark = await createBlog({
       title,
       img_url,
       body,

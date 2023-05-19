@@ -7,8 +7,11 @@ CREATE TABLE blogs (
  id SERIAL PRIMARY KEY,
  title TEXT NOT NULL,
  img_url TEXT,
- body TEXT,
+ body TEXT NOT NULL,
  author TEXT,
- date_created TEXT
+ date_created DATE,
+ date_updated DATE,
+ is_fav BOOLEAN
+
 
 );
