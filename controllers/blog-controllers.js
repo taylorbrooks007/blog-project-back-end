@@ -49,7 +49,7 @@ blogs.post(
   async (req, res) => {
     const { title, img_url, body, author, date_created } = req.body;
 
-    const newBookmark = await createBlog({
+    const newBlog = await createBlog({
       title,
       img_url,
       body,
@@ -64,12 +64,10 @@ blogs.post(
   }
 );
 
-// update bookmark
 blogs.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const blog = req.body;
-  const updatedBlog = await updateBlog(id, blog);
-  res.status(200).json(updatedBlog);
+  const updatedBlog = await updateBlog(id, req.body);
+  res.json(updatedBlog);
 });
 
 blogs.delete("/:id", async (req, res) => {

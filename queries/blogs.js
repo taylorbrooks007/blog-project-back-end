@@ -1,6 +1,6 @@
 const db = require("../db/dbConfig.js");
 
-const getAllBlogs = async () => {
+const getAllBlogs = async (req,res) => {
   try {
     const allBlogs = await db.any("SELECT * FROM blogs");
     return {allBlogs};
@@ -22,11 +22,11 @@ const createBlog = async (blog) => {
   try {
     const newBlog = await db.one(
       `INSERT INTO
-        blogs(title, img_url, body, author, date_created, is_fav)
+        blogs(title, img_url, body, author, date_created, date_updated, is_fav)
        VALUES
-        ($1, $2, $3, $4, $5)
+        ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *;`,
-      [blog.title, blog.img_url, blog.body, blog.author, blog.date_created, blog.is_fav]
+      [blog.title, blog.img_url, blog.body, blog.author, blog.date_created, blog.date_updated, blog.is_fav]
     );
     return {newBlog};
   } catch (error) {
